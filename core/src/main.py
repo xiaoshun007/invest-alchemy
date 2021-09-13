@@ -58,10 +58,33 @@ class Logger(object):
 sys.stdout = Logger()
 
 def run(code, name):
+    """
+    fund_adj：获取基金复权因子，用于计算基金复权行情
+    结果如下：
+         ts_code    trade_date  adj_factor
+0    513100.SH   20190926         1.0
+1    513100.SH   20190925         1.0
+2    513100.SH   20190924         1.0
+    """
     adj = pro.fund_adj(ts_code=code, start_date=start, end_date=end).sort_index(ascending=False)
+
+    """
+    fund_daily：获取场内基金日线行情，类似股票日行情
+    结果如下：
+    ts_code     trade_date  pre_close   open   high    low  close  change  pct_change    vol      amount  
+0    150008.SZ   20181029      1.070  0.964  1.070  0.964  1.070   0.000   0.0000        5.63       0.560  
+1    150009.SZ   20181029      0.909  0.902  0.917  0.890  0.917   0.008   0.8801     1301.00     116.736 
+2    150012.SZ   20181029      1.073  1.071  1.074  1.071  1.073   0.000   0.0000     2914.00     312.377  
+3    150013.SZ   20181029      1.317  1.340  1.340  1.205  1.299  -0.018   -1.3667      82.00     9.903  
+    """
     data = pro.fund_daily(ts_code=code, start_date=start, end_date=end).sort_index(ascending=False)
+
+    # pandas函数merge：根据trade_date列合并两个结果
     data = data.merge(adj, on='trade_date')
     try:
+        # pandas函数iloc：通过行号来取行数据（iloc[-1]数据中的最后一行）
+        # 后复权计算：以除权前最后一天的价格点为基础把除权后的数据进行复权
+        # 当天不复权收盘价 * 复权因子 / 前一天的复权因子
         qfq_close_price = data['close'].multiply(data['adj_factor']) / data['adj_factor'].iloc[-1]
     except:
         print("ERROR: cannot get price by ts, the code is " + code + " and will be skiped...\n")
