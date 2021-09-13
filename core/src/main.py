@@ -96,9 +96,11 @@ def run(code, name):
     time = np.array(data['trade_date'])
     short_ma = np.round(ta.MA(close_price, short_term), 3)
     long_ma = np.round(ta.MA(close_price, long_term), 3)
+    # 金叉：昨天短线收盘价 > 长线收盘价 && 前天短线收盘价 <= 长线收盘价
     if (short_ma[-1] > long_ma[-1] and short_ma[-2] <= long_ma[-2]):
         s = name + "(" + str(code) + ")" + "可买, 收盘价" + str(close_price[-1]) + ", 11日均线" + str(short_ma[-1]) + ", 22日均线" + str(long_ma[-1])
         buy_codes.append(s)
+    # 死叉：昨天短线收盘价 < 长线收盘价 && 前天短线收盘价 >= 长线收盘价
     elif (short_ma[-1] < long_ma[-1] and short_ma[-2] >= long_ma[-2]):
         s = name + "(" + str(code) + ")" + "可卖, 收盘价" + str(close_price[-1]) + ", 11日均线" + str(short_ma[-1]) + ", 22日均线" + str(long_ma[-1])
         sell_codes.append(s)
