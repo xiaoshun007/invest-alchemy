@@ -90,7 +90,9 @@ def run(code, name):
     except:
         print("ERROR: cannot get price by ts, the code is " + code + " and will be skiped...\n")
         return
+    # 复权收盘价
     close_price = np.array(qfq_close_price)
+    # 交易日期
     time = np.array(data['trade_date'])
     short_ma = np.round(ta.MA(close_price, short_term), 3)
     long_ma = np.round(ta.MA(close_price, long_term), 3)
