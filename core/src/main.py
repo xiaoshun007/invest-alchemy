@@ -84,6 +84,7 @@ def run(code, name):
     try:
         # pandas函数iloc：通过行号来取行数据（iloc[-1]数据中的最后一行）
         # 后复权计算：以除权前最后一天的价格点为基础把除权后的数据进行复权
+        # 后复权将分红送股后的价格整体上移，所以最早交易日(4月2日)的价格是不变的，收盘价等于后复权收盘价：
         # 当天不复权收盘价 * 复权因子 / 前一天的复权因子
         qfq_close_price = data['close'].multiply(data['adj_factor']) / data['adj_factor'].iloc[-1]
     except:
