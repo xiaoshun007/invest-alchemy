@@ -94,7 +94,11 @@ def run(code, name):
     close_price = np.array(qfq_close_price)
     # 交易日期
     time = np.array(data['trade_date'])
+    # MA - 移动平均线:移动平均线是将某一段时间的收盘价之和除以该周期。 比如日线MA5指5天内的收盘价除以5 。
+    # 用法：talib.MA(数据, 周期);返回一维数组
+    # 此处为：短均线MA11；np.round：向下取整保留3位小数
     short_ma = np.round(ta.MA(close_price, short_term), 3)
+    # 长均线MA22
     long_ma = np.round(ta.MA(close_price, long_term), 3)
     # 金叉：昨天短线收盘价 > 长线收盘价 && 前天短线收盘价 <= 长线收盘价
     if (short_ma[-1] > long_ma[-1] and short_ma[-2] <= long_ma[-2]):
@@ -105,6 +109,7 @@ def run(code, name):
         s = name + "(" + str(code) + ")" + "可卖, 收盘价" + str(close_price[-1]) + ", 11日均线" + str(short_ma[-1]) + ", 22日均线" + str(long_ma[-1])
         sell_codes.append(s)
     else:
+        # 短线大于长线，说明曲线还在上涨，还没到交叉点，继续持有
         if short_ma[-1] > long_ma[-1]:
             for i in range(1, len(long_ma)):
                 if short_ma[-1 - i] <= long_ma[-1 - i]:
